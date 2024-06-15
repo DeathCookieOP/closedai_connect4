@@ -4,7 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Main {
 
-    static int[][] board = new int[7][6];
+    static int[][] board = new int[6][7];
 
     public static void main(String[] args) throws InterruptedException {
 
@@ -40,7 +40,7 @@ public class Main {
         //checks to see if user input is valid &
         //checks to see if column is full
         do {
-            if (userMove > 6 || userMove < 1) {
+            if (userMove > 7 || userMove < 1) {
                 System.out.println("invalid column");
                 System.out.print("Choose a column: ");
                 userMove = scanner.nextInt();
@@ -48,7 +48,7 @@ public class Main {
                 System.out.println("Column is full, choose a different row");
                 userMove = scanner.nextInt();
             }
-        } while ((userMove > 6 || userMove < 1) || board[0][userMove - 1] != -1);
+        } while ((userMove > 7 || userMove < 1) || board[0][userMove - 1] != -1);
 
         //1 cuz its userMove, so make it an x
         placeMove(userMove, 1);
@@ -62,10 +62,10 @@ public class Main {
      */
     public static boolean aiMove() {
         Random random = new Random();
-        int userMove = random.nextInt(6); //gets a random number 0-5
+        int userMove = random.nextInt(7); //gets a random number 0-5
 
         do {
-            if (board[0][userMove] != -1) userMove = random.nextInt(6);
+            if (board[0][userMove] != -1) userMove = random.nextInt(7);
         } while (board[0][userMove] != -1);
         System.out.println("AI chooses: " + (userMove + 1));
 
@@ -121,11 +121,9 @@ public class Main {
     public static boolean checkForWin(int columnPlaced, int user) {
         if (user == 1) columnPlaced -= 1;
 
-        if (efficientVerticalWin(columnPlaced)) return true;
-        if (efficientHorizontalWin(columnPlaced)) return true;
-        if (checkDiagonalWin(columnPlaced)) return true;
-
-        return false;
+        return efficientVerticalWin(columnPlaced) ||
+                efficientHorizontalWin(columnPlaced) ||
+                checkDiagonalWin(columnPlaced);
     }
 
     /**
@@ -143,7 +141,7 @@ public class Main {
             System.out.println();
         }
 
-        System.out.println("\n  1   2   3   4   5   6 ");
+        System.out.println("\n  1   2   3   4   5   6   7 ");
         System.out.println();
     }
 
@@ -166,6 +164,7 @@ public class Main {
      * @return          true if the most recent move resulted in a vertical win
      */
     public static boolean efficientVerticalWin(int columnPlaced) {
+        /*
         //+1 cuz the last used row was +1 ahead
         int rowPlaced = getNextAvailableRow(columnPlaced) + 1;
         // <= 3 because that will mean that there is 4 columns under it that have been used up
@@ -175,6 +174,25 @@ public class Main {
                     board[rowPlaced + 2][columnPlaced],
                     board[rowPlaced + 3][columnPlaced])) {
                 return true;
+            }
+        }
+
+        return false;
+         */
+
+        int ROWS = 6;
+        int COLUMNS = 7;
+
+        //last check at 4th row
+        for (int colm = 0; colm < COLUMNS; colm++) {
+            for (int row = 0; row < ROWS - 3; row++) {
+                if(board[row][colm] != -1 &&
+                        allEqual(board[row][colm],
+                                board[row + 1][colm],
+                                board[row + 2][colm],
+                                board[row + 3][colm])){
+                    return true;
+                }
             }
         }
 
@@ -189,6 +207,7 @@ public class Main {
      * @return          true if the most recent move resulted in a horizontal win
      */
     public static boolean efficientHorizontalWin(int columnPlaced) {
+        /*
         //starts from 0
         int colFromR = board[0].length - 1 - columnPlaced;
         int currRow = getNextAvailableRow(columnPlaced) + 1;
@@ -228,6 +247,25 @@ public class Main {
         }
 
         return false;
+        */
+
+        int ROWS = 6;
+        int COLUMNS = 7;
+
+        //last check at 3rd column
+        for (int row = 0; row < ROWS; row++) {
+            for (int colm = 0; colm < COLUMNS - 3; colm++) {
+                if (board[row][colm] != -1 &&
+                        allEqual(board[row][colm],
+                                board[row][colm + 1],
+                                board[row][colm + 2],
+                                board[row][colm + 3])) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
 
@@ -239,267 +277,41 @@ public class Main {
      * @return          true if the most recent move resulted in a diagonal win
      */
     public static boolean checkDiagonalWin(int columnPlaced) {
+        /*
         //only check for where the current one was place and check it's four diagonals
         int colFromR = board[0].length - 1 - columnPlaced;
         int currRow = getNextAvailableRow(columnPlaced) + 1;
+        */
 
+        int ROWS = 6;
+        int COLUMNS = 7;
 
-        switch (colFromR) {
-            case 5:
-                if (currRow >= 4) { //not possible to have a top-to-right 4 diagonal
-                    //all from this side will be the same params, -1 -1, -2 -2, etc. so only 1 call needed
-                    return allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced + 1],
-                            board[currRow - 2][columnPlaced + 2], board[currRow - 3][columnPlaced + 3]);
+        //Check diagonal (bottom left to top right) /
+        //start at 4th row, last check at 3rd column
+        for (int row = 3; row < ROWS; row++) {
+            for (int colm = 0; colm < COLUMNS - 3; colm++) {
+                if (board[row][colm] != -1 &&
+                        allEqual(board[row][colm],
+                                board[row - 1][colm + 1],
+                                board[row - 2][colm + 2],
+                                board[row - 3][colm + 3])) {
+                    return true;
                 }
-                else { //not possible to have a bottom-to-left 4 diagonal
-                    return allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced + 1],
-                            board[currRow + 2][columnPlaced + 2], board[currRow + 3][columnPlaced + 3]);
-                }
-            case 4:
-                if (currRow > 4) { //same as prev, but can have include one from under
-                    if (currRow == 6) {
-                        return allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced + 1],
-                                board[currRow - 2][columnPlaced + 2], board[currRow - 3][columnPlaced + 3]);
-                    } else if (currRow == 5) {
-                        return allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced + 1],
-                                board[currRow - 2][columnPlaced + 2], board[currRow - 3][columnPlaced + 3]) ||
-                                allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced - 1],
-                                        board[currRow - 1][columnPlaced + 1], board[currRow - 2][columnPlaced + 2]);
-                    }
-                }
-                else { //same as prev, but can have include one from above
-                    if(currRow == 4) {
-                        return allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced - 1],
-                                board[currRow + 1][columnPlaced + 1], board[currRow + 2][columnPlaced + 2]) ||
-                                allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced + 1],
-                                        board[currRow - 2][columnPlaced + 2], board[currRow - 3][columnPlaced + 3]) ||
-                                allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced + 1],
-                                        board[currRow - 2][columnPlaced + 2], board[currRow + 1][columnPlaced - 1]);
-                    }
-                    else if(currRow == 3) {
-                        return (allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced - 1],
-                                board[currRow - 2][columnPlaced - 2], board[currRow - 3][columnPlaced - 3]) ||
-                                allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced + 1],
-                                        board[currRow - 2][columnPlaced - 2], board[currRow - 1][columnPlaced - 1])) ||
-                                //top left to bot right
-                                allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced + 1],
-                                        board[currRow + 2][columnPlaced + 2], board[currRow - 1][columnPlaced - 1]);
-                    }
-                    else if(currRow == 2) {
-                        return allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced + 1],
-                                board[currRow + 2][columnPlaced + 2], board[currRow + 3][columnPlaced + 3]) ||
-                                allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced + 1],
-                                        board[currRow + 2][columnPlaced + 2], board[currRow - 1][columnPlaced - 1]) ||
-                                allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced - 1],
-                                        board[currRow - 1][columnPlaced + 1], board[currRow - 2][columnPlaced + 2]);
-                    }
-                    else if(currRow == 1) {
-                        return allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced + 1],
-                                board[currRow + 2][columnPlaced + 2], board[currRow + 3][columnPlaced + 3]) ||
-                                allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced + 1],
-                                        board[currRow + 2][columnPlaced + 2], board[currRow - 1][columnPlaced - 1]);
-                    }
-                    else if(currRow == 0) {
-                        return allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced + 1],
-                                board[currRow + 2][columnPlaced + 2], board[currRow + 3][columnPlaced + 3]);
-                    }
+            }
+        }
 
+        // Check diagonal (top left to bottom right) \
+        //last check at 4th row, last check at 3rd column
+        for (int row = 0; row < ROWS - 3; row++) {
+            for (int colm = 0; colm < COLUMNS - 3; colm++) {
+                if (board[row][colm] != -1 &&
+                        allEqual(board[row][colm],
+                                board[row + 1][colm + 1],
+                                board[row + 2][colm + 2],
+                                board[row + 3][colm + 3])) {
+                    return true;
                 }
-            case 3: //all this done (for case 3; currRow == 2 might be off )
-                //0th row
-                if (currRow > 4) {
-                    if (currRow == 6) {
-                        //bot to top right
-                        return allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced + 1],
-                                board[currRow - 2][columnPlaced + 2], board[currRow - 3][columnPlaced + 3]);
-                    } else if (currRow == 5) {
-                        return allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced + 1],
-                                board[currRow - 2][columnPlaced + 2], board[currRow - 3][columnPlaced + 3]) ||
-                                allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced + 1],
-                                        board[currRow - 2][columnPlaced + 2], board[currRow + 1][columnPlaced - 1]);
-
-                    }
-                }
-                else {
-                    if(currRow == 0) {
-                        return allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced + 1],
-                                board[currRow + 2][columnPlaced + 2], board[currRow + 3][columnPlaced + 3]);
-                    } else if (currRow == 1) {
-                        //can only be in straight line
-                        return allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced + 1],
-                                board[currRow + 2][columnPlaced + 2], board[currRow + 3][columnPlaced + 3]) ||
-                                allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced + 1],
-                                board[currRow + 2][columnPlaced + 2], board[currRow - 1][columnPlaced - 1]);
-                    } else if (currRow == 2) {
-                        //straight line starting from curr pos
-                        return (((allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced + 1],
-                                board[currRow + 2][columnPlaced + 2], board[currRow + 3][columnPlaced + 3]) ||
-                                allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced + 1],
-                                board[currRow + 2][columnPlaced + 2], board[currRow - 1][columnPlaced - 1])) ||
-                                (allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced + 1],
-                                        board[currRow + 1][columnPlaced - 1], board[currRow + 2][columnPlaced - 2]) ||
-                                        allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced + 1],
-                                        board[currRow - 2][columnPlaced + 2], board[currRow + 1 ][columnPlaced - 1]))) ||
-                                (allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced + 1],
-                                        board[currRow - 2][columnPlaced - 2], board[currRow - 1][columnPlaced - 1])));
-                    } else if (currRow == 3) {
-                        return (((allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced + 1],
-                                board[currRow + 2][columnPlaced + 2], board[currRow + 3][columnPlaced + 3]) ||
-                                allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced + 1],
-                                board[currRow + 2][columnPlaced + 2], board[currRow - 1][columnPlaced - 1])) ||
-                                allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced + 1],
-                                        board[currRow - 2][columnPlaced - 2], board[currRow - 1][columnPlaced - 1])) ||
-                                ((allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced + 1],
-                                        board[currRow + 1][columnPlaced - 1], board[currRow + 2][columnPlaced - 2]) ||
-                                        allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced + 1],
-                                        board[currRow - 2][columnPlaced + 2], board[currRow + 1 ][columnPlaced - 1])) ||
-                                        allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced + 1],
-                                                board[currRow - 2][columnPlaced + 2], board[currRow - 3][columnPlaced + 3])));
-                    }
-                    else if(currRow == 4) {
-                        return ((allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced + 1],
-                                board[currRow + 1][columnPlaced - 1], board[currRow + 2][columnPlaced - 2]) ||
-                                allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced + 1],
-                                board[currRow - 2][columnPlaced + 2], board[currRow + 1 ][columnPlaced - 1])) ||
-                                allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced + 1],
-                                        board[currRow - 2][columnPlaced + 2], board[currRow - 3][columnPlaced + 3])) ||
-                                (allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced + 1],
-                                        board[currRow + 2][columnPlaced + 2], board[currRow - 1][columnPlaced - 1]) ||
-                                        allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced + 1],
-                                        board[currRow - 2][columnPlaced - 2], board[currRow - 1][columnPlaced - 1]));
-                    }
-                }
-            case 2:
-                if (currRow > 4) {
-                    if(currRow == 6) {
-                        return allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced - 1],
-                                board[currRow - 2][columnPlaced - 2], board[currRow - 3][columnPlaced - 3]);
-                    }
-                    if(currRow == 5) {
-                        return (allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced + 1],
-                                board[currRow - 2][columnPlaced - 2], board[currRow - 1][columnPlaced - 1]) ||
-                                allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced - 1],
-                                board[currRow - 2][columnPlaced - 2], board[currRow - 3][columnPlaced - 3])) ||
-                                allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced + 1],
-                                board[currRow - 2][columnPlaced + 2], board[currRow + 1 ][columnPlaced - 1]);
-                    }
-                }
-                else {
-                    if(currRow == 4) {
-                        return (allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced - 1],
-                                board[currRow - 2][columnPlaced - 2], board[currRow - 3][columnPlaced - 3]) ||
-                                allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced + 1],
-                                board[currRow - 2][columnPlaced - 2], board[currRow - 1][columnPlaced - 1])) ||
-                                (allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced + 1],
-                                        board[currRow - 2][columnPlaced + 2], board[currRow + 1 ][columnPlaced - 1]) ||
-                                        allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced + 1],
-                                        board[currRow + 2][columnPlaced + 2], board[currRow - 1][columnPlaced - 1])) ||
-                                allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced + 1],
-                                        board[currRow + 1][columnPlaced - 1], board[currRow + 2][columnPlaced - 2]);
-                    }
-                    else if(currRow == 3) {
-                        return allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced - 1],
-                                board[currRow - 2][columnPlaced - 2], board[currRow - 3][columnPlaced - 3]) ||
-                                allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced + 1],
-                                board[currRow - 2][columnPlaced - 2], board[currRow - 1][columnPlaced - 1]) ||
-                                allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced + 1],
-                                board[currRow + 2][columnPlaced + 2], board[currRow - 1][columnPlaced - 1]) ||
-                                allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced + 1],
-                                        board[currRow - 2][columnPlaced + 2], board[currRow + 1 ][columnPlaced - 1]) ||
-                                allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced + 1],
-                                board[currRow + 1][columnPlaced - 1], board[currRow + 2][columnPlaced - 2]) ||
-                                allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced - 1],
-                                board[currRow + 2][columnPlaced - 2], board[currRow + 3][columnPlaced - 3]);
-                    }
-                    else if(currRow == 2) {
-                        return allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced - 1],
-                                board[currRow + 2][columnPlaced - 2], board[currRow + 3][columnPlaced - 3]) ||
-                                allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced + 1],
-                                board[currRow - 2][columnPlaced + 2], board[currRow + 1 ][columnPlaced - 1]) ||
-                                allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced + 1],
-                                        board[currRow + 1][columnPlaced - 1], board[currRow + 2][columnPlaced - 2]) ||
-                                allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced + 1],
-                                board[currRow - 2][columnPlaced - 2], board[currRow - 1][columnPlaced - 1]) ||
-                                allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced + 1],
-                                        board[currRow + 2][columnPlaced + 2], board[currRow - 1][columnPlaced - 1]);
-                    }
-                    else if(currRow == 1) {
-                        return allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced - 1],
-                                board[currRow + 2][columnPlaced - 2], board[currRow + 3][columnPlaced - 3]) ||
-                                allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced - 1],
-                                        board[currRow + 2][columnPlaced - 2], board[currRow - 1][columnPlaced + 1]) ||
-                                allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced - 1],
-                                        board[currRow + 1][columnPlaced + 1], board[currRow + 2][columnPlaced + 2]);
-                    }
-                    else if(currRow == 0) {
-                        return allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced - 1],
-                                board[currRow - 2][columnPlaced - 2], board[currRow - 3][columnPlaced - 3]);
-                    }
-                }
-                return true;
-            case 1:
-                if(currRow == 6) {
-                    return allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced - 1],
-                            board[currRow - 2][columnPlaced - 2], board[currRow - 3][columnPlaced - 3]);
-                }
-                if(currRow == 5) {
-                    return allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced + 1],
-                            board[currRow - 2][columnPlaced - 2], board[currRow - 1][columnPlaced - 1]) ||
-                            allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced - 1],
-                            board[currRow - 2][columnPlaced - 2], board[currRow - 3][columnPlaced - 3]);
-                }
-                if(currRow == 4) {
-                    return allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced - 1],
-                            board[currRow - 2][columnPlaced - 2], board[currRow - 3][columnPlaced - 3]) ||
-                            allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced + 1],
-                            board[currRow - 2][columnPlaced - 2], board[currRow - 1][columnPlaced - 1]) ||
-                            allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced + 1],
-                            board[currRow + 1][columnPlaced - 1], board[currRow + 2][columnPlaced - 2]);
-                }
-                if(currRow == 3) {
-                    return allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced - 1],
-                            board[currRow - 2][columnPlaced - 2], board[currRow - 3][columnPlaced - 3]) ||
-                            allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced + 1],
-                            board[currRow - 2][columnPlaced - 2], board[currRow - 1][columnPlaced - 1]) ||
-                            allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced + 1],
-                                    board[currRow + 1][columnPlaced - 1], board[currRow + 2][columnPlaced - 2]) ||
-                            allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced - 1],
-                            board[currRow + 2][columnPlaced - 2], board[currRow + 3][columnPlaced - 3]);
-                }
-                if(currRow == 2) {
-                    return allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced - 1],
-                            board[currRow + 2][columnPlaced - 2], board[currRow + 3][columnPlaced - 3]) ||
-                            allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced - 1],
-                                    board[currRow + 2][columnPlaced - 2], board[currRow + 1][columnPlaced + 1]) ||
-                            allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced - 1],
-                                    board[currRow - 1][columnPlaced - 1], board[currRow - 2][columnPlaced - 2]);
-                }
-                if(currRow == 1) {
-                    return allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced - 1],
-                            board[currRow + 2][columnPlaced - 2], board[currRow + 3][columnPlaced - 3]) ||
-                            allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced + 1],
-                            board[currRow + 1][columnPlaced - 1], board[currRow + 2][columnPlaced - 2]);
-                }
-                if(currRow == 0) {
-                    return allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced - 1],
-                            board[currRow + 2][columnPlaced - 2], board[currRow + 3][columnPlaced - 3]);
-                }
-            case 0:
-                if(currRow <= 6 && currRow >= 4) {
-                    //botright to top left
-                    return allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced - 1],
-                            board[currRow - 2][columnPlaced - 2], board[currRow - 3][columnPlaced - 3]);
-                }
-                else if(currRow == 3) {
-                    return allEqual(board[currRow][columnPlaced], board[currRow - 1][columnPlaced - 1],
-                            board[currRow - 2][columnPlaced - 2], board[currRow - 3][columnPlaced - 3]) || allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced - 1],
-                            board[currRow + 2][columnPlaced - 2], board[currRow + 3][columnPlaced - 3]);
-                }
-                else if(currRow <= 2 && currRow >= 0) {
-                    return allEqual(board[currRow][columnPlaced], board[currRow + 1][columnPlaced - 1],
-                            board[currRow + 2][columnPlaced - 2], board[currRow + 3][columnPlaced - 3]);
-                }
-
+            }
         }
 
         return false;
