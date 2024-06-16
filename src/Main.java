@@ -4,7 +4,8 @@ import java.util.concurrent.TimeUnit;
 
 public class Main {
 
-    static int[][] board = new int[6][7];
+    static int ROWS = 6, COLUMNS = 7;
+    static int[][] board = new int[ROWS][COLUMNS];
 
     public static void main(String[] args) throws InterruptedException {
 
@@ -25,6 +26,11 @@ public class Main {
                 System.out.println("AI is winner!");
                 break;
             }
+
+            if(fullBoard()){
+                System.out.println("Full Board, No Winner!");
+                break;
+            }
         }
     }
 
@@ -40,7 +46,7 @@ public class Main {
         //checks to see if user input is valid &
         //checks to see if column is full
         do {
-            if (userMove > 7 || userMove < 1) {
+            if (userMove > COLUMNS || userMove < 1) {
                 System.out.println("invalid column");
                 System.out.print("Choose a column: ");
                 userMove = scanner.nextInt();
@@ -48,7 +54,7 @@ public class Main {
                 System.out.println("Column is full, choose a different row");
                 userMove = scanner.nextInt();
             }
-        } while ((userMove > 7 || userMove < 1) || board[0][userMove - 1] != -1);
+        } while ((userMove > COLUMNS || userMove < 1) || board[0][userMove - 1] != -1);
 
         //1 cuz its userMove, so make it an x
         placeMove(userMove, 1);
@@ -62,10 +68,10 @@ public class Main {
      */
     public static boolean aiMove() {
         Random random = new Random();
-        int userMove = random.nextInt(7); //gets a random number 0-5
+        int userMove = random.nextInt(COLUMNS); //gets a random number 0-5
 
         do {
-            if (board[0][userMove] != -1) userMove = random.nextInt(7);
+            if (board[0][userMove] != -1) userMove = random.nextInt(COLUMNS);
         } while (board[0][userMove] != -1);
         System.out.println("AI chooses: " + (userMove + 1));
 
@@ -157,6 +163,21 @@ public class Main {
     }
 
     /**
+     * Check if board is full by checking for any -1(empty) in board
+     */
+    public static boolean fullBoard(){
+        for (int i = 0; i < ROWS; i++) {
+            for (int j = 0; j < COLUMNS; j++) {
+                if(board[i][j] == -1){
+                    return false;   //end check at first empty space
+                }
+            }
+        }
+
+        return true;    //no empty space found
+    }
+
+    /**
      * Checks to see if there is a vertical win
      *
      * @param columnPlaced  is the column where the most recent piece was placed
@@ -179,9 +200,6 @@ public class Main {
 
         return false;
          */
-
-        int ROWS = 6;
-        int COLUMNS = 7;
 
         //last check at 4th row
         for (int colm = 0; colm < COLUMNS; colm++) {
@@ -249,9 +267,6 @@ public class Main {
         return false;
         */
 
-        int ROWS = 6;
-        int COLUMNS = 7;
-
         //last check at 3rd column
         for (int row = 0; row < ROWS; row++) {
             for (int colm = 0; colm < COLUMNS - 3; colm++) {
@@ -270,7 +285,7 @@ public class Main {
 
 
     /**
-     * Checks to see if there is a digaonal win
+     * Checks to see if there is a diagonal win
      *
      * @param columnPlaced  is the column where the most recent piece was placed
      *
@@ -282,9 +297,6 @@ public class Main {
         int colFromR = board[0].length - 1 - columnPlaced;
         int currRow = getNextAvailableRow(columnPlaced) + 1;
         */
-
-        int ROWS = 6;
-        int COLUMNS = 7;
 
         //Check diagonal (bottom left to top right) /
         //start at 4th row, last check at 3rd column
