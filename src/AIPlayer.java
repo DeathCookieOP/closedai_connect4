@@ -26,7 +26,7 @@ public class AIPlayer {
                 int score = minimax(0, false, Integer.MIN_VALUE, Integer.MAX_VALUE);
                 board.getSquare(currentRow, colm).setUser(-1);
 
-        //System.out.println("Evaluating Column: " + (col + 1) + " with score: " + score); Alejandro's Notes: this was added to fix error i was having
+                //System.out.println("Evaluating Column: " + (col + 1) + " with score: " + score); Alejandro's Notes: this was added to fix error i was having
 
                 if (score > bestScore) {
                     bestScore = score;
@@ -38,7 +38,7 @@ public class AIPlayer {
             bestMove = firstColumn();
         }
 
-        System.out.println("AI chooses: " + (bestMove + 1));
+        System.out.println("\nAI chooses: " + (bestMove + 1));
         board.placeMove(bestMove, 0);
         return board.checkForWin(bestMove, 0);
     }

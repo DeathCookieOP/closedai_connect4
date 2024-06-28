@@ -131,21 +131,6 @@ public class Game {
      * @return          true if the most recent move resulted in a vertical win
      */
     public boolean efficientVerticalWin(int columnPlaced) {
-        /*
-        //+1 cuz the last used row was +1 ahead
-        int rowPlaced = getNextAvailableRow(columnPlaced) + 1;
-        // <= 3 because that will mean that there is 4 columns under it that have been used up
-        if (rowPlaced <= 3) {
-            if (allEqual(board[rowPlaced][columnPlaced],
-                    board[rowPlaced + 1][columnPlaced],
-                    board[rowPlaced + 2][columnPlaced],
-                    board[rowPlaced + 3][columnPlaced])) {
-                return true;
-            }
-        }
-
-        return false;
-         */
 
         //last check at 4th row
         for (int colm = 0; colm < COLUMNS; colm++) {
@@ -171,47 +156,6 @@ public class Game {
      * @return          true if the most recent move resulted in a horizontal win
      */
     public  boolean efficientHorizontalWin(int columnPlaced) {
-        /*
-        //starts from 0
-        int colFromR = board[0].length - 1 - columnPlaced;
-        int currRow = getNextAvailableRow(columnPlaced) + 1;
-
-        //start at 5 cuz colPlaced is 0-5
-        switch (colFromR) {
-            case 5: //means all the way on the left //x - - - - -
-                return allEqual(board[currRow][columnPlaced], board[currRow][columnPlaced + 1],
-                        board[currRow][columnPlaced + 2], board[currRow][columnPlaced + 3]);
-            case 4: // - x - - - - => x x x x - - || - x x x x - -
-                return allEqual(board[currRow][columnPlaced], board[currRow][columnPlaced + 1],
-                        board[currRow][columnPlaced + 2], board[currRow][columnPlaced + 3]) ||
-                        allEqual(board[currRow][columnPlaced], board[currRow][columnPlaced - 1],
-                                board[currRow][columnPlaced + 1], board[currRow][columnPlaced + 2]);
-            case 3: // - - x - - - => x x x x - - || - x x x x - || - - x x x x
-                return (allEqual(board[currRow][columnPlaced], board[currRow][columnPlaced - 2],
-                        board[currRow][columnPlaced - 1], board[currRow][columnPlaced + 1]) ||
-                        allEqual(board[currRow][columnPlaced], board[currRow][columnPlaced - 1],
-                                board[currRow][columnPlaced + 1], board[currRow][columnPlaced + 2])) ||
-                        allEqual(board[currRow][columnPlaced], board[currRow][columnPlaced + 1],
-                                board[currRow][columnPlaced + 2], board[currRow][columnPlaced + 3]);
-            case 2: // - - - x - - => x x x x - - || - x x x x - || - - x x x x
-                return (allEqual(board[currRow][columnPlaced], board[currRow][columnPlaced - 1],
-                        board[currRow][columnPlaced - 2], board[currRow][columnPlaced - 3]) ||
-                        allEqual(board[currRow][columnPlaced], board[currRow][columnPlaced - 2],
-                                board[currRow][columnPlaced - 1], board[currRow][columnPlaced + 1])) ||
-                        allEqual(board[currRow][columnPlaced], board[currRow][columnPlaced - 1],
-                                board[currRow][columnPlaced + 1], board[currRow][columnPlaced + 2]);
-            case 1: // - - - - x - => - x x x x - || - - x x x x
-                return allEqual(board[currRow][columnPlaced], board[currRow][columnPlaced - 1],
-                        board[currRow][columnPlaced - 2], board[currRow][columnPlaced - 3]) ||
-                        allEqual(board[currRow][columnPlaced], board[currRow][columnPlaced - 2],
-                                board[currRow][columnPlaced - 1], board[currRow][columnPlaced + 1]);
-            case 0: // - - - - - x => - - x x x x
-                return allEqual(board[currRow][columnPlaced], board[currRow][columnPlaced - 1],
-                        board[currRow][columnPlaced - 2], board[currRow][columnPlaced - 3]);
-        }
-
-        return false;
-        */
 
         //last check at 3rd column
         for (int row = 0; row < ROWS; row++) {
@@ -238,11 +182,6 @@ public class Game {
      * @return          true if the most recent move resulted in a diagonal win
      */
     public boolean checkDiagonalWin(int columnPlaced) {
-        /*
-        //only check for where the current one was place and check it's four diagonals
-        int colFromR = board[0].length - 1 - columnPlaced;
-        int currRow = getNextAvailableRow(columnPlaced) + 1;
-        */
 
         //Check diagonal (bottom left to top right) /
         //start at 4th row, last check at 3rd column

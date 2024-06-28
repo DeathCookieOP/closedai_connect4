@@ -5,7 +5,7 @@
  * Date Last Updated: 06/24/2024
  * */
 
-import java.util.Scanner;
+        import java.util.Scanner;
 
 public class Player {
 
@@ -25,7 +25,9 @@ public class Player {
      */
     public boolean playerMove() {
         // Scanner scanner = new Scanner(System.in); Commented this line out
+        System.out.println("\n  1   2   3   4   5   6   7 ");
         System.out.print("Choose a column: ");
+
         int userMove = scanner.nextInt();
 
         //was board[0][userMove - 1]
