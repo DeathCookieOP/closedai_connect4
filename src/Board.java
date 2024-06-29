@@ -26,9 +26,9 @@ public class Board {
         for (int i = 0; i < ROWS; i++) {
             System.out.print("| ");
             for (int j = 0; j < COLUMNS; j++) {
-                if (board[i][j].getUser() == 0) System.out.print("o | ");
-                else if (board[i][j].getUser() == 1) System.out.print("x | ");
-                else System.out.print("- | ");
+                if (board[i][j].getUser() == 0) System.out.print("o | ");       //ai
+                else if (board[i][j].getUser() == 1) System.out.print("x | ");  //player
+                else System.out.print("- | ");                                  //empty
             }
             System.out.println();
         }

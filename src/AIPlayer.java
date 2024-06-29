@@ -1,3 +1,5 @@
+import java.util.PriorityQueue;
+
 /**
  * INFO ABOUT CLASS
  *
@@ -180,6 +182,51 @@ public class AIPlayer {
         if (playerCount == 2 && emptyCount == 2) return -10;
 
         return aiCount - playerCount;
+    }
+
+    /*---------------------------------------------------------------*/
+
+    public boolean bestFirstAI() {
+
+        PriorityQueue<node> bestFirst = new PriorityQueue<>((a, b) -> b.score - a.score); // Max-heap, largest to smallest
+
+        for (int colm = 0; colm < COLUMNS; colm++) {    //potential moves
+            if (board.getSquareValue(0, colm) == -1) {      //check if colm is open
+                int currentRow = getNextAvailableRow(colm);
+                board.getSquare(currentRow, colm).setUser(0);   //set move to user 0 (AI)
+                int score = evaluateBoard();
+
+                node tempNode = new node(score, colm);          //create node, save score and move
+                bestFirst.add(tempNode);                        //add node to queue
+
+                board.getSquare(currentRow, colm).setUser(-1); //reset move
+            }
+        }
+
+        node bestNode = bestFirst.poll();
+
+        int bestMove = bestNode.move;
+
+        // Return the best score found
+        if(bestMove != -1){
+            System.out.println("\nAI chooses: " + (bestMove + 1));
+            board.placeMove(bestMove, 0);
+            return board.checkForWin(bestMove, 0);
+        }else{
+            System.out.println("No move found");
+            return false;
+        }
+    }
+
+    public static class node {
+        private int score = Integer.MIN_VALUE;
+        private int move = -1;
+
+        // Constructor
+        public node(int score, int move) {
+            this.score = score;
+            this.move = move;
+        }
     }
 
 }

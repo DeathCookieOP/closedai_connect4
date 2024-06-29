@@ -1,3 +1,4 @@
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -9,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Game {
 
+    static Scanner scanner = new Scanner(System.in);
     static final int ROWS = 6;
     static final int COLUMNS = 7;
     Board board;
@@ -22,37 +24,93 @@ public class Game {
     }
 
     public void startGame() {
-        try {
-            board.printBoard();
-            boolean playerWin = false;
-            boolean aiWin = false;
 
-            while (true) {
-                realPlayer = new Player(board);
-                aiPlayer = new AIPlayer(board);
-                playerWin = realPlayer.playerMove();
-                board.printBoard();
-                if (playerWin) {
-                    System.out.println("Player is winner!");
-                    break;
-                }
+        boolean playerWin = false;
+        boolean aiWin = false;
+        int choice = 0;
 
-                TimeUnit.SECONDS.sleep(1);
-                aiWin = aiPlayer.aiMove();
-                board.printBoard();
-                if (aiWin) {
-                    System.out.println("AI is winner!");
-                    break;
-                }
+        System.out.println("Choose AI:\n1: Alpha-Beta Pruning\n2: Best First Search");
+        System.out.print("Choice: ");
+        choice = scanner.nextInt();
 
-                if (board.fullBoard()) {
-                    System.out.println("Full Board, No Winner!");
+        do{
+            switch (choice){
+                case 1:
+                    System.out.println("Alpha-Beta Pruning");
+
+                    try {
+                        board.printBoard();
+
+                        while (true) {
+                            realPlayer = new Player(board);
+                            aiPlayer = new AIPlayer(board);
+                            playerWin = realPlayer.playerMove();
+                            board.printBoard();
+                            if (playerWin) {
+                                System.out.println("Player is winner!");
+                                break;
+                            }
+
+                            TimeUnit.SECONDS.sleep(1);
+                            aiWin = aiPlayer.aiMove();
+                            board.printBoard();
+                            if (aiWin) {
+                                System.out.println("AI is winner!");
+                                break;
+                            }
+
+                            if (board.fullBoard()) {
+                                System.out.println("Full Board, No Winner!");
+                                break;
+                            }
+                        }
+                    } catch (InterruptedException e) {
+                        System.out.println("The game was interrupted!");
+                    }
+
                     break;
-                }
+
+                case 2:
+                    System.out.println("Best First Search");
+
+                    try {
+                        board.printBoard();
+
+                        while (true) {
+                            realPlayer = new Player(board);
+                            aiPlayer = new AIPlayer(board);
+                            playerWin = realPlayer.playerMove();
+                            board.printBoard();
+                            if (playerWin) {
+                                System.out.println("Player is winner!");
+                                break;
+                            }
+
+                            TimeUnit.SECONDS.sleep(1);
+                            aiWin = aiPlayer.bestFirstAI();
+                            board.printBoard();
+                            if (aiWin) {
+                                System.out.println("AI is winner!");
+                                break;
+                            }
+
+                            if (board.fullBoard()) {
+                                System.out.println("Full Board, No Winner!");
+                                break;
+                            }
+                        }
+                    } catch (InterruptedException e) {
+                        System.out.println("The game was interrupted!");
+                    }
+
+                    break;
+                default:
+                    System.out.println("Invalid Choice.\nChoose AI:\n1: Alpha-Beta Pruning\n2: Best First Search");
+                    System.out.print("Choice: ");
+                    choice = scanner.nextInt();
             }
-        } catch (InterruptedException e) {
-            System.out.println("The game was interrupted!");
-        }
+
+        }while(choice != 1 && choice != 2);
 
     }
 
