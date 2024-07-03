@@ -104,13 +104,14 @@ public class Game {
                     }
 
                     break;
+
                 default:
                     System.out.println("Invalid Choice.\nChoose AI:\n1: Alpha-Beta Pruning\n2: Best First Search");
                     System.out.print("Choice: ");
                     choice = scanner.nextInt();
-            }
+        }
 
-        }while(choice != 1 && choice != 2);
+        }while(choice < 1 || choice > 2);
 
     }
 

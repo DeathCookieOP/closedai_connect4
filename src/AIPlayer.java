@@ -188,24 +188,30 @@ public class AIPlayer {
 
     public boolean bestFirstAI() {
 
-        PriorityQueue<node> bestFirst = new PriorityQueue<>((a, b) -> b.score - a.score); // Max-heap, largest to smallest
+        int score, currentRow;
+        node tempNode;
 
-        for (int colm = 0; colm < COLUMNS; colm++) {    //potential moves
+        PriorityQueue<node> bestFirst = new PriorityQueue<>((a, b) -> b.score - a.score); // Max-heap, descending order
+
+        for (int colm = 0; colm < COLUMNS; colm++) {            //potential moves
             if (board.getSquareValue(0, colm) == -1) {      //check if colm is open
-                int currentRow = getNextAvailableRow(colm);
-                board.getSquare(currentRow, colm).setUser(0);   //set move to user 0 (AI)
-                int score = evaluateBoard();
+                currentRow = getNextAvailableRow(colm);
 
-                node tempNode = new node(score, colm);          //create node, save score and move
-                bestFirst.add(tempNode);                        //add node to queue
+                board.getSquare(currentRow, colm).setUser(0);   //set move to user 0 (AI)
+                score = evaluateBoard();
+
+                tempNode = new node(score, colm);           //save score and colm in node
+
+                bestFirst.add(tempNode);                    //add to queue
 
                 board.getSquare(currentRow, colm).setUser(-1); //reset move
             }
         }
 
-        node bestNode = bestFirst.poll();
-
+        node bestNode = bestFirst.poll();           //save top, highest score
         int bestMove = bestNode.move;
+
+        printBoardScore();       //see how AI scores its moves
 
         // Return the best score found
         if(bestMove != -1){
@@ -213,14 +219,15 @@ public class AIPlayer {
             board.placeMove(bestMove, 0);
             return board.checkForWin(bestMove, 0);
         }else{
-            System.out.println("No move found");
+            System.out.println("Error: No move found");
             return false;
         }
+
     }
 
     public static class node {
-        private int score = Integer.MIN_VALUE;
-        private int move = -1;
+        private final int score;
+        private final int move;
 
         // Constructor
         public node(int score, int move) {
@@ -229,4 +236,21 @@ public class AIPlayer {
         }
     }
 
+    public void printBoardScore(){
+        int score;
+
+        System.out.println();
+
+        for (int colm = 0; colm < COLUMNS; colm++) {
+            if (board.getSquareValue(0, colm) == -1) {
+                int currentRow = getNextAvailableRow(colm);
+
+                board.getSquare(currentRow, colm).setUser(0);
+                score = evaluateBoard();
+                board.getSquare(currentRow, colm).setUser(-1);
+
+                System.out.print(" [" + score + "]");                                  //empty
+            }
+        }
+    }
 }

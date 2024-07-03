@@ -17,7 +17,6 @@ public class Board {
         emptyBoard();
     }
 
-
     /**
      * Prints the board to the console
      * remove printBoard(int[][] board to printBoard()
