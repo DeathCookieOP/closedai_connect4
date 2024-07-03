@@ -87,7 +87,7 @@ public class Game {
                             }
 
                             TimeUnit.SECONDS.sleep(1);
-                            aiWin = aiPlayer.bestFirstAI();
+                            aiWin = aiPlayer.aiMoveBestFirstSearch();
                             board.printBoard();
                             if (aiWin) {
                                 System.out.println("AI is winner!");
