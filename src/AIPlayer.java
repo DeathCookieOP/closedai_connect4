@@ -188,15 +188,18 @@ public class AIPlayer {
 
     public boolean aiMoveBestFirstSearch() {
         PriorityQueue<node> bestMove = new PriorityQueue<>((a, b) -> b.score - a.score); // Max-heap, descending order by score
+        node moveNode;
+        int currentRow;
 
         for (int colm = 0; colm < COLUMNS; colm++) {
             if (board.getSquareValue(0, colm) == -1) {
-                int currentRow = getNextAvailableRow(colm);
+                currentRow = getNextAvailableRow(colm);
                 board.getSquare(currentRow, colm).setUser(0);
-                int score = BestFirstSearch(0, false);  //start with AI move
+                moveNode = BestFirstSearch(0, false);
+
                 board.getSquare(currentRow, colm).setUser(-1);
 
-                bestMove.add(new node(score, colm));           //create and add node to queue
+                bestMove.add(new node(moveNode.score, colm));           //create and add node to queue
 
             }
         }
@@ -204,39 +207,42 @@ public class AIPlayer {
             bestMove.add(new node(0, firstColumn()));  //if no move found, play first available column
         }
 
-        System.out.println("\nAI chooses: " + (bestMove.poll().move + 1));
-        board.placeMove(bestMove.poll().move, 0);
-        return board.checkForWin(bestMove.poll().move, 0);
+        int move = bestMove.peek().move;
+        System.out.println("\nAI chooses: " + (move + 1));
+        board.placeMove(move, 0);
+        return board.checkForWin(move, 0);
     }
 
-    public int BestFirstSearch(int depth, boolean maximizingPlayer) {
-        if (board.checkForWinState() || depth == 8) {   //if win detected or depth 8, return score
-            return evaluateBoard();
-        }
-
+    public node BestFirstSearch(int depth, boolean maximizingPlayer) {
         PriorityQueue<node> bestQueue = new PriorityQueue<>((a, b) -> b.score - a.score); // Max-heap, descending order by score
+
+        node moveNode;
+
+        if (board.checkForWinState() || depth == 8) {   //if win detected or depth 8, return score
+            return new node(evaluateBoard(), -1);
+        }
 
         for (int col = 0; col < COLUMNS; col++) {
             int row = getNextAvailableRow(col);
             if (row != -1) {
                 board.getSquare(row, col).setUser(maximizingPlayer ? 0 : 1);    //if maximizingPlayer true use 0, else use 1
 
-                int score = BestFirstSearch(depth + 1, !maximizingPlayer);  //recursion
+                moveNode = BestFirstSearch(depth + 1, !maximizingPlayer);  //recursion
                 board.getSquare(row, col).setUser(-1);
 
-                if(!bestQueue.isEmpty() && (score < bestQueue.peek().score)){   //if queue not empty and score less than current priority queue score
+                if(!bestQueue.isEmpty() && (moveNode.score < bestQueue.peek().score)){   //if queue not empty and score less than current priority queue score
                     break;
                 }
 
-                bestQueue.add(new node(score, col));
+                bestQueue.add(new node(moveNode.score, col));
             }
         }
 
         if (bestQueue.isEmpty()) {  // If priority queue empty, return score of current board
-            return evaluateBoard();
+            return new node(evaluateBoard(), -1);
         }
 
-        return bestQueue.peek().score;
+        return bestQueue.peek();
     }
 
     public static class node {
